@@ -4,7 +4,7 @@ Offline-first acquisition for VFX on set. This mobile redesign builds on stable 
 
 ## Run
 
-Serve this directory over HTTP on localhost, or deploy the static files over HTTPS. There is no install or build step and no runtime dependency. Open `index.html` through the server, not `file://`. After the first successful load, the service worker caches the application for offline use.
+Serve this directory over HTTP on localhost, or deploy the static files over HTTPS. There is no install or build step and one bundled PDF library and no remote runtime dependency. Open `index.html` through the server, not `file://`. After the first successful load, the service worker caches the application for offline use.
 
 ## What changed
 
@@ -16,12 +16,12 @@ Serve this directory over HTTP on localhost, or deploy the static files over HTT
 - Per-take notes, structured measurements and additive SI normalization.
 - Safe project deletion with a typed code; equipment deletion unassigns every shot reference.
 - Green/blue screen assets, tracking patterns, PNG/share/fullscreen, printable markers, distortion grids and scale references.
-- Reports print inside the same document. No pop-up windows.
+- Project/shot reports generate a named PDF file for download or native file sharing. Printable marker and scale sheets use the native print dialog.
 - Metadata JSON, shot CSV and a JSON backup that embeds original media as data URLs.
 
 ## Data compatibility
 
-The database stays `slyhigh-vfx-data`, version 1, with stores `kv` and `media`. Export schema stays `slyhigh.vfxdata` / `0.1.0`. Existing project/day/scene/setup/shot UUIDs and original fields remain intact. UI build version is separately `0.2.2`.
+The database stays `slyhigh-vfx-data`, version 1, with stores `kv` and `media`. Export schema stays `slyhigh.vfxdata` / `0.1.0`. Existing project/day/scene/setup/shot UUIDs and original fields remain intact. UI build version is separately `0.2.5`.
 
 New optional fields include `inherited_from`, `cameraProvenance`, equipment `provenance`, `si`, `nd`, `sensorMode`, `nextMarkerId`, and timestamps. Media records normally retain the existing Blob representation; in storage contexts that reject Blob/File preparation, an optional `bytes` ArrayBuffer is used and reconstructed when read. Earlier plates and voice recordings remain accessible under Previous captures; this version does not offer new plate/audio recording workflows.
 
@@ -54,3 +54,13 @@ VFX Tools uses the supplied new banner and app icon. Spanish and English follow 
 New projects only ask for a name and operator; a unique code is generated internally. New shot immediately creates an editable slate with a unique sequential shot name, today's date and camera/context inherited from the previous shot. Scene and setup remain blank when no real context exists. Editing scene/setup moves only the current shot. Clearing inherited values preserves fields already entered by the operator. Type dropdowns have explicit add/remove controls. Capture is available once in the persistent dock.
 
 Project reports include every shot, the brand banner, camera values, notes, measurements and reference photos. Image decoding finishes before printing; missing/unsupported images are explicitly labeled. Videos are listed with their take and caption and remain available in the original-media backup. Large reports flow across pages. The original database name and export schema remain unchanged.
+
+## v0.2.5
+
+The app uses a viewport-height flex shell: only the main content scrolls, while capture and navigation occupy normal layout rows at the bottom. VisualViewport resizing updates the shell for iOS; safe-area padding belongs to the navigation row. The page background matches the footer through the bottom inset. New service-worker versions offer a reload notice without clearing storage or automatically interrupting unfinished forms.
+
+New projects open equipment setup. Shot creation validates that a registered camera and lens exist even when called from other screens. One available item is assigned automatically; valid previous selections carry forward; ambiguous equipment requires a choice. Canceling equipment setup creates no empty shot. Existing shots remain readable.
+
+Shot deletion is confirmed in the UI and commits the updated project plus capture cleanup in one IndexedDB transaction. Shared media referenced by surviving shots is retained. Failed transactions leave state unchanged; empty day/scene/setup groups are pruned after successful deletion.
+
+Project and shot reports now use locally bundled pdf-lib 1.17.1 (MIT, license in vendor/) to produce a real application/pdf File. The ready screen offers a download link with the exact filename and file sharing from a fresh user tap. Reports retain the banner, all selected shots, camera states, measurements, notes, reference photos, page numbers and explicit missing-media labels. Photos are bounded to 1600 px on the longest side for export; originals remain intact. Standard PDF text retains Spanish accents; characters outside the standard font use browser-rendered text so the visible content is preserved. This works offline after the app cache is installed.

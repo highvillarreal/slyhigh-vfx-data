@@ -62,3 +62,15 @@ New coverage: es-MX/en-US automatic language selection, ES/EN/System switching a
 Rendered and visually inspected the final two-page A4 report, including both shots and all reference images. White paper, intact logo and readable transparent references verified. Updated icon dimensions: 768 × 768 PNG. Banner: 1004 × 192 PNG. Supplied assets are copied unchanged.
 
 Run from repository root with a server on port 4173. Set PLAYWRIGHT_MODULE if Playwright is installed outside node_modules and BROWSER_CHANNEL=msedge for Edge. Run node tests/e2e.cjs before node tests/edge-cases.cjs (the latter uses the former's fixture). node tests/webkit.cjs starts its own server on port 4180 and tests offline reload by stopping it. Run node tests/ux-022.cjs, optionally TEST_ENGINE=webkit. ux-021.cjs forwards to the current UX suite. Physical iPhone/iPad camera, sharing and printing still need device testing.
+
+## v0.2.5 — 2026-09-23
+
+Passed ux-025.cjs in Chromium and WebKit: cannot create a shot with zero equipment or only a camera; returning from registration retains setup context; multiple cameras require explicit selection; created shots carry valid equipment IDs. Downloaded the actual generated PDF and asserted its suggested filename. Native sharing was stubbed to inspect the real File name/type/size. Confirmed that project PDF never calls window.print. Chromium generated a report after offline reload.
+
+Checked 30 section/viewport combinations per engine, including iPhone portrait/landscape and iPad: footer bottom equals the visual viewport bottom, all four controls span the width, main content does not overlap the capture row, no horizontal overflow. Inspected the mobile footer screenshot. Physical iPhone standalone safe-area behavior still needs device verification; browser emulation cannot prove native chrome behavior.
+
+Shot deletion tests cover cancel, deletion with media, deletion of the final shot and empty hierarchy, preservation of equipment, reload persistence and an intentionally aborted transaction that leaves the shot intact.
+
+The downloaded two-page PDF was reopened with pypdf and rendered with PDFium. Verified project/date title, both shots, accented text, camera/lens values, photo, notes and page numbers. Inspected both rendered pages.
+
+Updated and passed e2e.cjs, edge-cases.cjs and webkit.cjs, retaining capture retry, offline reload, backup, equipment unassignment and typed project-deletion coverage. ux-022.cjs and ux-021.cjs forward to the current UX suite.
