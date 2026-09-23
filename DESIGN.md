@@ -62,3 +62,15 @@ Un fallo al guardar captura aborta tanto el archivo como su referencia: no queda
 Eliminar cámara/lente informa cuántos shots la usan, anula esos IDs y conserva focal, focus y demás valores independientes. Eliminar proyecto exige escribir el código exacto y elimina registros y medios en una transacción.
 
 No se incorporan login, backend, nube, IA, ingest de cámara, procesamiento de escaneos ni sincronización PostCore.
+
+## Ajustes v0.2.1 — teléfono y tablet
+
+El ancho útil se adapta hasta 1200 px. A partir de 760 px, cámara y captura/notas comparten el espacio en dos columnas; Library separa cámaras y lentes; los assets colocan controles y preview lado a lado. Por debajo, cada flujo vuelve a una sola columna. La barra inferior ocupa todo el viewport y la captura calcula su posición a partir de su altura real.
+
+La identificación del shot se organiza como una claqueta: producción, shot, escena, setup y TAKE, con divisores sobrios. La fecha automática pasa a una sección secundaria editable. Los tipos se asignan con desplegables nativos y se mantienen los tipos múltiples.
+
+El shutter alterna entre ángulo y fracción de segundo. Se convierte según FPS, sin inventar ese valor cuando falta. El modo seleccionado determina qué valor conservar al cambiar FPS.
+
+La salida PDF principal es del proyecto completo. La salida del shot activo está identificada de manera independiente. Lens distortion genera un PNG de celdas cuadradas con cruz central, además de compartir y fullscreen, como los assets de chroma.
+
+El banner oficial aportado se usa sin recortar, teñir ni modificar el archivo.

@@ -21,7 +21,7 @@ Serve this directory over HTTP on localhost, or deploy the static files over HTT
 
 ## Data compatibility
 
-The database stays `slyhigh-vfx-data`, version 1, with stores `kv` and `media`. Export schema stays `slyhigh.vfxdata` / `0.1.0`. Existing project/day/scene/setup/shot UUIDs and original fields remain intact. UI build version is separately `0.2.0`.
+The database stays `slyhigh-vfx-data`, version 1, with stores `kv` and `media`. Export schema stays `slyhigh.vfxdata` / `0.1.0`. Existing project/day/scene/setup/shot UUIDs and original fields remain intact. UI build version is separately `0.2.1`.
 
 New optional fields include `inherited_from`, `cameraProvenance`, equipment `provenance`, `si`, `nd`, `sensorMode`, `nextMarkerId`, and timestamps. Media records normally retain the existing Blob representation; in storage contexts that reject Blob/File preparation, an optional `bytes` ArrayBuffer is used and reconstructed when read. Earlier plates and voice recordings remain accessible under Previous captures; this version does not offer new plate/audio recording workflows.
 
@@ -29,9 +29,19 @@ Deploy updates at the existing origin. Browser storage does not transfer between
 
 ## Known limits
 
-- `assets/logo-mark.png` in the stable source is corrupt (PNG decoding fails). It is retained untouched for traceability but not displayed. The UI and SVG icon use a monochrome typographic brand until a valid official logo is supplied. No replacement symbol has been fabricated.
-- Web Share, camera/Files handoff, standalone safe areas, system keyboard dictation and physical print scaling need final verification on an actual iPhone/printer. Browser emulation cannot prove these device behaviors.
+- The supplied official banner is displayed unchanged with `object-fit: contain` and cached offline. The earlier damaged logo is unused; the existing typographic app icon remains.
+- Web Share, camera/Files handoff, standalone safe areas, system keyboard dictation and physical print scaling need final verification on an actual iPhone/iPad/printer. Browser emulation cannot prove these device behaviors.
 - Backups embed media in a single JSON file and can use substantial memory for large video projects. They are portable data exports; a backup-import UI is outside this redesign.
 - Generic lens families and cameras with mount/sensor variants intentionally leave ambiguous details empty. Preset gamma values are editable starting points, not observations of the camera's recording configuration.
 
 See `DESIGN.md` for the experience system and `VALIDATION.md` for verified behavior.
+
+## v0.2.1 refinements
+
+The layout adapts to phone, iPad portrait/landscape and split view. Navigation fills the viewport with larger controls; the capture dock follows its measured height. Shot identity uses a slate-inspired arrangement and wider screens separate camera state from notes/capture. Camera and lens lists use separate columns on tablets.
+
+Shot dates come from the device and live under a secondary disclosure. Correcting an existing date moves only that shot to the matching day/scene/setup, preserving its UUID and records. Shot types use native dropdowns while retaining multiple classifications.
+
+Shutter supports angle or reciprocal seconds. The existing `camera.shutter` stays an angle; additive `shutterMode` and `shutterFraction` retain the chosen representation and denominator. FPS is required to convert between representations. If FPS changes, the selected unit stays fixed and its equivalent is recalculated. CSV includes explicit mode, fraction denominator and seconds.
+
+Project PDF is the primary report and includes every shot across days/scenes/setups. Current-shot PDF remains a separate explicit action. Distortion grids are image assets with fullscreen, share and PNG export, including custom dimensions and uniform square cells.

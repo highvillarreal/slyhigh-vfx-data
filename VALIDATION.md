@@ -40,3 +40,15 @@ The test runner's synthetic WebKit `setOffline(true)` navigation produced an int
 Run the app through a localhost HTTP server on port 4173. With Node.js and Playwright installed, run `node tests/e2e.cjs`, then `node tests/edge-cases.cjs`. These use an isolated browser context and sample production data, never your normal browser profile. Use `BROWSER_CHANNEL=msedge` where only Edge is installed, or configure the browser launcher for your CI environment.
 
 `tests/webkit.cjs` starts its own temporary local server on port 4180 to test a genuine unavailable-network-origin scenario. Its browser binary must be installed with Playwright.
+
+## v0.2.1 validation
+
+Passed `tests/ux-021.cjs` in Chromium and WebKit:
+
+- Device date is prefilled but collapsed, shot code is first, and editing a date moves only the intended shot without changing its UUID or losing records.
+- Native dropdowns preserve multiple shot types.
+- Shutter conversions include 24 fps / 180° = 1/48 s, 1/60 s = 144° at 24 fps, and 23.976 fps / 180° = 1/47.952 s. Mode switching refuses a conversion when FPS is missing, preserving the entered value. Fractions inherit and reload correctly.
+- A report fixture spanning different days/scenes includes all three shots and their unique notes; generated PDF text was inspected. Explicit current-shot export contains just the active shot and does not change selection.
+- Distortion PNG dimensions, custom square output, fullscreen and the native-share call payload pass. Physical sharing remains a device check.
+- Seven viewport/orientation combinations from 320 × 740 through 1366 × 1024 show no horizontal overflow across Shoot, Shot, Library, New Shot, Tools and Distortion. Navigation spans the viewport and is at least 90 px high; tablet shot panes split into two columns. Banner loads at every size.
+- Original end-to-end acquisition and offline suites continue to pass. New public build is 0.2.1; schema and database versions remain unchanged.
