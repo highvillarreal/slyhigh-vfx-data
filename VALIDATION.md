@@ -74,3 +74,15 @@ Shot deletion tests cover cancel, deletion with media, deletion of the final sho
 The downloaded two-page PDF was reopened with pypdf and rendered with PDFium. Verified project/date title, both shots, accented text, camera/lens values, photo, notes and page numbers. Inspected both rendered pages.
 
 Updated and passed e2e.cjs, edge-cases.cjs and webkit.cjs, retaining capture retry, offline reload, backup, equipment unassignment and typed project-deletion coverage. ux-022.cjs and ux-021.cjs forward to the current UX suite.
+
+## v0.2.6 — 2026-09-23
+
+Replaced accumulated shell/footer overrides with layout.css. The previous shell failed a new regression test when a mocked visual viewport was 62 px shorter than the layout viewport without a keyboard. The new shell uses CSS dynamic viewport height and only uses the visual viewport during substantial keyboard occlusion. This test models the reported gap; it does not establish the user's actual device metrics.
+
+Reproduced a second issue in WebKit at 320 px: a long lens option gave main a scrollWidth of 368 px even though the root had no overflow and the select's measured rectangle fit. Sizing the select's closed appearance removes that overflow while retaining the native picker. Inputs/grids also have explicit minimum-width constraints and wrapping for long labels.
+
+Passed tests/layout-026.cjs in Chromium and WebKit: 192 page/size/language cases per engine across 12 portrait, landscape, phone, split-view and tablet sizes (320–1366 px). Injected safe areas include top 62, bottom 34 and landscape side 59 px. Assertions inspect the actual content scroller and child bounds, not only root width; verify footer bounds and compact height; reach the final item in a 30-shot list; preserve list position after opening a shot and returning; test long unbroken values, keyboard sizing/restoration, pinch-zoom distinction and short-window modal bounds. Visually inspected phone list and editor screenshots with simulated safe areas.
+
+Passed ux-025.cjs in both engines, including equipment gating, named PDF download/share, shot deletion/cancel/transaction rollback and offline PDF generation in Chromium. Passed e2e.cjs for capture, forms, state, inheritance, tools and offline reload. No changes to PDF generation or equipment flow.
+
+These are desktop browser engine tests with simulated sizes/insets/keyboard. Physical iPhone/iPad standalone behavior, system keyboard and native picker still require device verification.
