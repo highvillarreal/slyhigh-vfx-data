@@ -1,5 +1,28 @@
 // Presentation-only translations. Stored enum values, user text and IDs never change.
 const ES={
+'Update ready. Save your changes, then tap to reload.':'Actualización lista. Guarda tus cambios y toca aquí para recargar.',
+"Set up equipment":"Configurar equipo",
+"Register a camera and a lens before creating shots.":"Registra al menos una cámara y un lente antes de crear shots.",
+"Ready":"Listo",
+"Required":"Requerido",
+"Not registered yet":"Aún no registrado",
+"Continue to shoot":"Continuar a rodaje",
+"Select shot equipment":"Seleccionar equipo del shot",
+"Open shot":"Abrir shot",
+"Delete shot":"Borrar shot",
+"This deletes the shot, its notes, measurements and captures from this device.":"Se borrarán el shot, sus notas, medidas y capturas de este dispositivo.",
+"captures":"capturas",
+"Finish saving the capture before deleting this shot.":"Termina de guardar la captura antes de borrar este shot.",
+"Shot deleted":"Shot borrado",
+"Could not delete the shot. Please retry.":"No se pudo borrar el shot. Vuelve a intentar.",
+"PDF ready":"PDF listo",
+"Save PDF":"Guardar PDF",
+"Share PDF":"Compartir PDF",
+"Your PDF is ready to save or share with this filename.":"Tu PDF está listo para guardar o compartir con este nombre.",
+"Could not share the PDF. Use Save PDF.":"No se pudo compartir. Usa Guardar PDF.",
+"Page":"Página",
+"Continued":"Continuación",
+"Some images could not be included. See the labels in the PDF.":"Algunas imágenes no se pudieron incluir. Consulta las indicaciones del PDF.",
 '/ LIBRARY':'/ BIBLIOTECA','/ EXPORT':'/ EXPORTAR',
 'Type to confirm':'Escribe para confirmar','camera':'cámara','lens':'lente','12 cells across short side':'12 celdas en el lado corto','18 cells across short side':'18 celdas en el lado corto','24 cells across short side':'24 celdas en el lado corto','Letter · 216 × 279 mm':'Carta · 216 × 279 mm',
 'Welcome':'Bienvenido','Projects saved on this device.':'Proyectos guardados en este dispositivo.','Projects':'Proyectos','No projects yet.':'Aún no hay proyectos.','+ New project':'+ Nuevo proyecto','New project':'Nuevo proyecto','Project name':'Nombre del proyecto','Display name':'Nombre','Operator':'Operador','Create project':'Crear proyecto','Enter a project name.':'Escribe el nombre del proyecto.','Project created':'Proyecto creado','Project settings':'Ajustes del proyecto','+ New shot':'+ Nuevo shot','No shots yet.':'Aún no hay shots.','Shot log':'Lista de shots','shoot days':'días de rodaje','TOTAL':'TOTAL','Back':'Volver','Equipment':'Equipo','Library':'Biblioteca','LIBRARY':'BIBLIOTECA','SHOOT':'RODAJE','TOOLS':'HERRAMIENTAS','EXPORT':'EXPORTAR','Tools':'Herramientas','Export':'Exportar',
@@ -18,7 +41,7 @@ function translateText(value){const trimmed=value.trim();if(Object.hasOwn(ES,tri
 // Called on static source fragments before user data is interpolated.
 function ui(fragment){if(currentLanguage()!=='es')return fragment;return fragment.replace(/(^|>)([^<>]*)(?=<|$)/g,(_,edge,text)=>edge+translateText(text)).replace(/(aria-label|alt)="([^"]*)"/g,(_,attr,text)=>attr+'="'+translateText(text)+'"')}
 function updateLanguageControl(){document.documentElement.lang=currentLanguage();const control=document.getElementById('languageSelect');if(control){control.value=languagePreference;control.setAttribute('aria-label',t('Language'));control.options[0].textContent=t('System')}for(const [id,label] of [['nav','Main navigation'],['dlg','Confirm deletion'],['captureInput','Capture photo or video']])document.getElementById(id)?.setAttribute('aria-label',t(label));document.querySelector('.brand')?.setAttribute('aria-label',t('VFX Tools, projects'))}
-function setLanguage(value){if(!['system','es','en'].includes(value))return;const inputs=[...document.querySelectorAll('main input,main textarea,main select')].map(el=>({id:el.id,value:el.value,checked:el.checked})),details=[...document.querySelectorAll('main details')].map(el=>el.open),scroll=scrollY;languagePreference=value;try{localStorage.setItem('vfx-tools-language',value)}catch{}render();for(const saved of inputs){const el=document.getElementById(saved.id);if(el){el.value=saved.value;if(el.type==='checkbox')el.checked=saved.checked}}document.querySelectorAll('main details').forEach((el,i)=>el.open=details[i]||false);updateLanguageControl();setSaveStatus(saveError?'NOT SAVED · RETRY':'ON DEVICE',saveError);scrollTo(0,scroll)}
+function setLanguage(value){if(!['system','es','en'].includes(value))return;const inputs=[...document.querySelectorAll('main input,main textarea,main select')].map(el=>({id:el.id,value:el.value,checked:el.checked})),details=[...document.querySelectorAll('main details')].map(el=>el.open),scroll=document.getElementById('main').scrollTop;languagePreference=value;try{localStorage.setItem('vfx-tools-language',value)}catch{}render();for(const saved of inputs){const el=document.getElementById(saved.id);if(el){el.value=saved.value;if(el.type==='checkbox')el.checked=saved.checked}}document.querySelectorAll('main details').forEach((el,i)=>el.open=details[i]||false);updateLanguageControl();setSaveStatus(saveError?'NOT SAVED · RETRY':'ON DEVICE',saveError);document.getElementById('main').scrollTo(0,scroll)}
 window.addEventListener('languagechange',()=>{if(languagePreference==='system')setLanguage('system')});
 
 function tr(value){return currentLanguage()==='es'?translateText(value):value}

@@ -1,4 +1,4 @@
-const C='slyhigh-vfx-tools-v0.2.4',A=['./','./index.html','./style.css','./app.js','./presets.js','./manifest.webmanifest','./i18n.js','./assets/vfx-tools-banner.png','./assets/vfx-tools-icon-solid.png'];
+const C='slyhigh-vfx-tools-v0.2.5',A=['./','./index.html','./style.css','./app.js','./presets.js','./manifest.webmanifest','./i18n.js','./pdf-export.js','./vendor/pdf-lib-1.17.1.min.js','./assets/vfx-tools-banner.png','./assets/vfx-tools-icon-solid.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(A)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('slyhigh-vfx-')&&k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET'||new URL(e.request.url).origin!==self.location.origin)return;e.respondWith(caches.match(e.request).then(cached=>cached||fetch(e.request).then(r=>{if(r.ok){const copy=r.clone();caches.open(C).then(c=>c.put(e.request,copy))}return r}).catch(()=>e.request.mode==='navigate'?caches.match('./index.html'):Response.error())))});
