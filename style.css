@@ -14,3 +14,7 @@
 
 /* v0.1.1 block 5 — safe destructive actions */
 button.danger{border-color:#6b2d36;color:#ffb4bd;background:#241116}button.danger.strong{min-height:48px;background:#7f1d2d;border-color:#9f2a3d;color:#fff;font-weight:800}.resourceRow{align-items:center}.resourceRow .row{flex-shrink:0}
+
+/* v0.1.1 block 6 — screen assets */
+.section.compact{margin:8px 2px}.screenPreviewWrap{margin:14px 0;background:#050507;border:1px solid var(--l);border-radius:16px;padding:10px;display:grid;place-items:center}.screenCanvas{display:block;width:100%;height:auto;max-height:44vh;object-fit:contain;border-radius:8px}.toolActions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.toolActions button{min-height:46px}.screenFullscreen{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center}.screenFullscreen canvas{width:100vw;height:100vh;object-fit:contain}.screenFullscreen button{position:fixed;top:calc(12px + env(safe-area-inset-top));right:12px;width:44px;height:44px;border-radius:50%;background:#0008;border-color:#ffffff66;font-size:24px}
+@media(max-width:420px){.toolActions{grid-template-columns:1fr}.toolActions button{min-height:48px}}
