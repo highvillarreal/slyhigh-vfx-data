@@ -1,10 +1,1 @@
-{
-  "name":"SLYHIGH VFX Data Acquisition",
-  "short_name":"VFX Data",
-  "start_url":"./",
-  "scope":"./",
-  "display":"standalone",
-  "background_color":"#08080a",
-  "theme_color":"#08080a",
-  "icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
-}
+{"name":"SLYHIGH VFX Tools","short_name":"SLYHIGH VFX Tools","start_url":"./","scope":"./","display":"standalone","background_color":"#0b0b0d","theme_color":"#0b0b0d","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]}
