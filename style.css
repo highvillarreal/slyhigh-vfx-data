@@ -8,3 +8,6 @@
 
 /* v0.1.1 block 2 — shot inheritance */
 .inheritRow{display:flex;align-items:center;gap:12px;min-height:58px;padding:10px 12px;border:1px solid #503a87;background:#171225;border-radius:14px}.inheritRow input{width:22px;height:22px;accent-color:var(--a)}.inheritRow span{display:grid;gap:2px}.inheritRow b{font-size:14px}.inheritRow small{color:var(--m)}
+
+/* v0.1.1 block 4 — capture first */
+.captureSimple{grid-template-columns:1fr}.captureSimple button{min-height:68px}.capturePreview{display:block;width:100%;max-height:48vh;object-fit:contain;background:#050507;border:1px solid var(--l);border-radius:14px;margin:4px 0 14px}
