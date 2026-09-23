@@ -17,7 +17,7 @@ function exportJSON(){dl(p().code+'_VFX_DATA.json',new Blob([JSON.stringify(payl
 function q(v){return '"'+String(v??'').replace(/"/g,'""')+'"'} function exportCSV(){let a=[['day','date','scene','setup','shot','take','types','camera','lens','focal_mm','focus_m','aperture','ei','wb','shutter','fps','measurements','references','plates','notes','shutter_mode','shutter_fraction_denominator','shutter_seconds']];for(let d of p().days)for(let s of d.scenes)for(let u of s.setups)for(let h of u.shots){let c=h.camera||{};a.push([d.code,d.date,s.code,u.code,h.code,h.take,(h.types||[]).join('|'),cam(c.cameraId),lens(c.lensId),c.focal,c.focus,c.aperture,c.ei,c.wb,c.shutter,c.fps,h.measurements.length,h.media.length,h.plates.length,h.notes.length,c.shutterMode||'angle',c.shutterFraction,shutterSeconds(c)])}dl(p().code+'_SHOTS.csv',new Blob([a.map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv'}))}
 
 // UI 0.2; the original IndexedDB name, stores, UUIDs and schema remain unchanged.
-const BUILD='0.2.6', icons={shoot:'<path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"/>',library:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 5V3m8 2V3M4 10h16m-8 0v10"/>',tools:'<path d="M14 5a5 5 0 0 0-6 6L3 16l5 5 5-5a5 5 0 0 0 6-6l-4 4-5-5z"/>',export:'<path d="M12 3v12m-4-4 4 4 4-4M4 15v6h16v-6"/>',camera:'<path d="M3 7h5l2-3h4l2 3h5v13H3z"/><circle cx="12" cy="13" r="4"/>'};
+const BUILD='0.2.7', icons={shoot:'<path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"/>',library:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 5V3m8 2V3M4 10h16m-8 0v10"/>',tools:'<path d="M14 5a5 5 0 0 0-6 6L3 16l5 5 5-5a5 5 0 0 0 6-6l-4 4-5-5z"/>',export:'<path d="M12 3v12m-4-4 4 4 4-4M4 15v6h16v-6"/>',camera:'<path d="M3 7h5l2-3h4l2 3h5v13H3z"/><circle cx="12" cy="13" r="4"/>'};
 let route={page:'projects'},navStack=[],objectURLs=[],captureContext=null,pendingCapture=null,editingLib=null,customField=null,toastTimer,saveError=false;
 const icon=k=>'<svg viewBox="0 0 24 24" aria-hidden="true">'+icons[k]+'</svg>', pretty=s=>t(String(s||'').replaceAll('_',' ').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())), opt=(v,l,selected)=>'<option value="'+esc(v)+'" '+(String(v)===String(selected)?'selected':'')+'>'+esc(l??v)+'</option>';
 function field(id,label,value='',type='text',extra=''){return '<div class="field"><label for="'+id+'">'+label+'</label><input id="'+id+'" type="'+type+'" value="'+esc(value??'')+'" '+extra+'></div>'}
@@ -30,13 +30,13 @@ function setSaveStatus(text,failed=false){$('saveStatus').innerHTML=(failed?'':'
 function put(n,v,k){return new Promise((resolve,reject)=>{const tx=db.transaction(n,'readwrite');const os=tx.objectStore(n);k===undefined?os.put(v):os.put(v,k);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||new Error('Storage transaction aborted'))})}
 async function save(){setSaveStatus(tr('SAVING'));try{await put('kv',state,'state');saveError=false;setSaveStatus(tr('SAVED ON DEVICE'))}catch(e){saveError=true;setSaveStatus(tr('NOT SAVED · RETRY'),true);toast(tr('Could not save. Free device storage, then tap Retry.'));throw e}}
 $('saveStatus').addEventListener('click',()=>{if(saveError)save().catch(()=>{})});
-function go(page,extra={},replace=false){if(page==='newShot')return createShot();if(!replace){navStack.push({...route,scroll:$('main').scrollTop});history.pushState({sly:true},'')}route={page,projectId:state.activeProjectId,shotId:state.activeShotId,...extra};render();$('main').scrollTo(0,0)}
+function go(page,extra={},replace=false){if(page==='newShot')return createShot();if(!replace){navStack.push({...route,scroll:window.scrollY});history.pushState({sly:true},'')}route={page,projectId:state.activeProjectId,shotId:state.activeShotId,...extra};render();window.scrollTo(0,0)}
 function back(){if(navStack.length){history.back()}else go(p()?'shoot':'projects',{},true)}
-window.addEventListener('popstate',()=>{route=navStack.pop()||{page:p()?'shoot':'projects'};if('projectId'in route){state.activeProjectId=route.projectId;state.activeShotId=route.shotId;if(state.activeShotId&&!raw()){state.activeShotId=null;route={page:'shoot',projectId:state.activeProjectId,shotId:null}}save().catch(()=>{})}render();$('main').scrollTo(0,route.scroll||0)});
+window.addEventListener('popstate',()=>{route=navStack.pop()||{page:p()?'shoot':'projects'};if('projectId'in route){state.activeProjectId=route.projectId;state.activeShotId=route.shotId;if(state.activeShotId&&!raw()){state.activeShotId=null;route={page:'shoot',projectId:state.activeProjectId,shotId:null}}save().catch(()=>{})}render();window.scrollTo(0,route.scroll||0)});
 function view(page){state.view=page;save().catch(()=>{});go(page)}
 function closeDlg(){$('dlg').close()}
-function render(){if(!('projectId'in route)){route.projectId=state.activeProjectId;route.shotId=state.activeShotId}objectURLs.forEach(URL.revokeObjectURL);objectURLs=[];const page=route.page;document.body.dataset.page=page;renderCaptureDock();const parent=['pdfReady'].includes(page)?'export':['equipmentSetup','shotEquipment'].includes(page)?'library':['shot','newShot','measure','references','measurements','catalog','legacy'].includes(page)?'shoot':['camera','lens'].includes(page)?'library':['screen','markers','distortion','scale'].includes(page)?'tools':page;$('nav').hidden=!p()||['newProject','newShot','camera','lens','measure','catalog','captureError','custom','shotTypes','projectSettings'].includes(page);$('nav').innerHTML=['shoot','library','tools','export'].map(k=>'<button class="'+(parent===k?'active':'')+'" onclick="view(\''+k+'\')">'+icon(k)+'<span>'+t(k.toUpperCase())+'</span></button>').join('');const pages={projects:projectsScreen,newProject:newProjectScreen,shoot:shootScreen,shot:shotScreen,newShot:newShotScreen,library:libraryScreen,camera:libraryEditor,lens:libraryEditor,measure:measurementScreen,references:referencesScreen,measurements:measurementsScreen,catalog:catalogScreen,captureError:captureErrorScreen,custom:customScreen,shotTypes:shotTypesScreen,projectSettings:projectSettingsScreen,tools:toolsScreen,screen:screenAssetScreen,markers:markerScreen,distortion:distortionScreen,scale:scaleScreen,export:exportScreen,legacy:legacyScreen,equipmentSetup:equipmentSetupScreen,shotEquipment:shotEquipmentScreen,pdfReady:pdfReadyScreen};if(!p()&&!['projects','newProject'].includes(page)){route={page:'projects'};return render()}(pages[route.page]||projectsScreen)()}
-function projectsScreen(){$('main').innerHTML='<section class="hero"><div class="eyebrow accent">VFX TOOLS / '+BUILD+ui('</div><h1>Welcome</h1><p class="lead">Projects saved on this device.</p></section>')+section(tr('Projects'),String(state.projects.length).padStart(2,'0'))+'<div class="list">'+(state.projects.length?state.projects.map(pr=>row(pr.name,pr.code,"switchProject('"+pr.id+"')",shots(pr).length+' shots')).join(''):ui('<div class="empty">No projects yet.</div>'))+ui('</div><button class="primary action" onclick="go(\'newProject\')">+ New project</button>')}
+function render(){if(!('projectId'in route)){route.projectId=state.activeProjectId;route.shotId=state.activeShotId}objectURLs.forEach(URL.revokeObjectURL);objectURLs=[];const page=route.page;document.body.dataset.page=page;renderCaptureDock();const parent=['pdfReady'].includes(page)?'export':['equipmentSetup','shotEquipment'].includes(page)?'library':['shot','newShot','measure','references','measurements','catalog','legacy'].includes(page)?'shoot':['camera','lens'].includes(page)?'library':['screen','markers','distortion','scale'].includes(page)?'tools':page;$('nav').hidden=!p()||['appSettings','newProject','newShot','camera','lens','measure','catalog','captureError','custom','shotTypes','projectSettings'].includes(page);$('nav').innerHTML=['shoot','library','tools','export'].map(k=>'<button class="'+(parent===k?'active':'')+'" onclick="view(\''+k+'\')">'+icon(k)+'<span>'+t(k.toUpperCase())+'</span></button>').join('');const pages={appSettings:appSettingsScreen,projects:projectsScreen,newProject:newProjectScreen,shoot:shootScreen,shot:shotScreen,newShot:newShotScreen,library:libraryScreen,camera:libraryEditor,lens:libraryEditor,measure:measurementScreen,references:referencesScreen,measurements:measurementsScreen,catalog:catalogScreen,captureError:captureErrorScreen,custom:customScreen,shotTypes:shotTypesScreen,projectSettings:projectSettingsScreen,tools:toolsScreen,screen:screenAssetScreen,markers:markerScreen,distortion:distortionScreen,scale:scaleScreen,export:exportScreen,legacy:legacyScreen,equipmentSetup:equipmentSetupScreen,shotEquipment:shotEquipmentScreen,pdfReady:pdfReadyScreen};if(!p()&&!['projects','newProject','appSettings'].includes(page)){route={page:'projects'};return render()}(pages[route.page]||projectsScreen)();syncBottomChrome()}
+function projectsScreen(){$('main').innerHTML=ui('<div class="project-actions"><button onclick="go(\'appSettings\')">App settings</button></div>')+'<section class="hero"><div class="eyebrow accent">VFX TOOLS / '+BUILD+ui('</div><h1>Welcome</h1><p class="lead">Projects saved on this device.</p></section>')+section(tr('Projects'),String(state.projects.length).padStart(2,'0'))+'<div class="list">'+(state.projects.length?state.projects.map(pr=>row(pr.name,pr.code,"switchProject('"+pr.id+"')",shots(pr).length+' shots')).join(''):ui('<div class="empty">No projects yet.</div>'))+ui('</div><button class="primary action" onclick="go(\'newProject\')">+ New project</button>')}
 
 function newProjectScreen(){$('main').innerHTML=pageTop(tr('New project'),tr('Projects'))+'<form onsubmit="createProject(event)">'+field('pn',tr('Project name'),'','text','required')+field('op',tr('Operator'),state.operator)+ui('<button class="primary action">Create project</button></form>')}
 
@@ -198,7 +198,7 @@ function shutterEquivalent(c){if(!(Number(c.fps)>0))return tr('Set FPS to calcul
 async function setShutterMode(mode){const c=raw().camera,current=c.shutterMode==='fraction'?c.shutterFraction:c.shutter;if(mode!==(c.shutterMode||'angle')&&current>0&&!(Number(c.fps)>0))return toast(tr('Set FPS before converting shutter units.'));syncShutter(c);c.shutterMode=mode;syncShutter(c);$('shutterControl').innerHTML=shutterControls();await save()}
 async function selectShutter(v){if(v==='custom'){$('shutterCustomWrap').hidden=false;$('shutterCustom').focus();return}await updateShutter(v);$('shutterControl').innerHTML=shutterControls()}
 async function updateShutter(value){const h=raw(),c=h.camera,fraction=c.shutterMode==='fraction',n=value===''?null:Number(value);if(n!==null&&(!Number.isFinite(n)||n<=0||(!fraction&&n>360)))return toast(fraction?tr('Enter a positive denominator.'):tr('Use an angle greater than 0 and up to 360°.'));c[fraction?'shutterFraction':'shutter']=n;h.cameraProvenance||={};h.cameraProvenance.shutter=h.cameraProvenance.shutterFraction=n===null?'EMPTY':'USER ENTERED';syncShutter(c);c.updated=now();await save();$('shutterEquivalent').textContent=shutterEquivalent(c)}
-const navObserver=new ResizeObserver(()=>{if(!$('nav').hidden)document.documentElement.style.setProperty('--nav-height',$('nav').getBoundingClientRect().height+'px')});navObserver.observe($('nav'));
+
 
 let gridSettings={aspect:'16:9',width:3840,height:2160,density:18},gridBlob=null,gridVersion=0;
 function drawDistortion(){const canvas=$('gridCanvas');if(!canvas)return;let w=gridSettings.width,h=gridSettings.height;if(gridSettings.aspect!=='CUSTOM'){const [a,b]=gridSettings.aspect.split(':').map(Number);w=a>=b?3840:Math.round(3840*a/b);h=a>=b?Math.round(3840*b/a):3840}const version=++gridVersion;gridBlob=null;if(!Number.isInteger(w)||!Number.isInteger(h)||w<64||h<64||w>4096||h>4096){$('gridSize').textContent=tr('Use whole dimensions from 64 to 4096 px.');return}canvas.width=w;canvas.height=h;const ctx=canvas.getContext('2d'),step=Math.min(w,h)/gridSettings.density;ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#000';ctx.lineWidth=Math.max(1,Math.min(w,h)/700);ctx.beginPath();for(let i=-Math.ceil(w/step/2);i<=Math.ceil(w/step/2);i++){const x=w/2+i*step;ctx.moveTo(x,0);ctx.lineTo(x,h)}for(let i=-Math.ceil(h/step/2);i<=Math.ceil(h/step/2);i++){const y=h/2+i*step;ctx.moveTo(0,y);ctx.lineTo(w,y)}ctx.stroke();ctx.lineWidth*=3;ctx.beginPath();ctx.arc(w/2,h/2,step*.28,0,Math.PI*2);ctx.moveTo(w/2-step*.5,h/2);ctx.lineTo(w/2+step*.5,h/2);ctx.moveTo(w/2,h/2-step*.5);ctx.lineTo(w/2,h/2+step*.5);ctx.stroke();$('gridSize').textContent=w+' × '+h+tr(' px · square cells · center crosshair');canvas.toBlob(b=>{if(version===gridVersion)gridBlob=b},'image/png')}
@@ -219,30 +219,55 @@ window.addEventListener('afterprint',()=>{document.title='VFX Tools'});
 
 
 
+function syncBottomChrome(){
+ // Only measure the controls to reserve content space; never derive app height.
+ for(const [id,property] of [['nav','--nav-height'],['captureDock','--dock-height']]){
+  const value=($(id)?.getBoundingClientRect().height||0)+'px';
+  if(document.documentElement.style.getPropertyValue(property)!==value)document.documentElement.style.setProperty(property,value);
+ }
+}
+const screenSamples=[];
+function screenSample(reason){
+ const rect=id=>{const r=$(id)?.getBoundingClientRect();return r?{top:Math.round(r.top),bottom:Math.round(r.bottom),height:Math.round(r.height)}:null};
+ const vv=window.visualViewport,nav=$('nav');
+ return {reason,at:Math.round(performance.now()),installed:!!(navigator.standalone||matchMedia('(display-mode: standalone)').matches),inner:[innerWidth,innerHeight],client:[document.documentElement.clientWidth,document.documentElement.clientHeight],screen:[screen.width,screen.height],visual:vv?{height:Math.round(vv.height),offsetTop:Math.round(vv.offsetTop),scale:vv.scale}:null,scroll:Math.round(scrollY),nav:rect('nav'),dock:rect('captureDock'),navPadding:nav?getComputedStyle(nav).padding:null,keyboard:document.body.classList.contains('keyboard')};
+}
 function initViewportLayout(){
+ history.scrollRestoration='manual';
  let frame;
- const update=()=>{
+ const update=reason=>{
   cancelAnimationFrame(frame);
   frame=requestAnimationFrame(()=>{
    const viewport=window.visualViewport;
    const editing=/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName||'');
-   // CSS owns the normal viewport. In standalone iOS, visualViewport can omit
-   // the status bar; using it as the app height leaves a second gap at the bottom.
-   // Only use it for a substantial keyboard occlusion, never for pinch zoom.
+   // Hide fixed controls while the keyboard occupies the screen. Native page
+   // scrolling keeps focused fields reachable; no viewport height is imposed.
    const keyboard=!!(viewport&&Math.abs(viewport.scale-1)<.01&&editing&&window.innerHeight-viewport.height>Math.max(120,window.innerHeight*.25));
    document.body.classList.toggle('keyboard',keyboard);
-   if(keyboard){
-    document.documentElement.style.setProperty('--keyboard-height',viewport.height+'px');
-    if($('main').contains(document.activeElement))document.activeElement.scrollIntoView({block:'nearest',inline:'nearest'});
-   }else document.documentElement.style.removeProperty('--keyboard-height');
+   syncBottomChrome();
+   screenSamples.push(screenSample(reason));
+   if(screenSamples.length>16)screenSamples.splice(1,1);
   });
  };
- window.addEventListener('resize',update);
- window.visualViewport?.addEventListener('resize',update);
- document.addEventListener('focusin',update);
- document.addEventListener('focusout',update);
- update();
+ const observer=new ResizeObserver(syncBottomChrome);
+ observer.observe($('nav'));if($('captureDock'))observer.observe($('captureDock'));
+ for(const event of ['resize','pageshow','orientationchange'])window.addEventListener(event,()=>update(event));
+ window.visualViewport?.addEventListener('resize',()=>update('visual-resize'));
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)update('resume')});
+ document.addEventListener('focusin',()=>update('focusin'));
+ document.addEventListener('focusout',()=>update('focusout'));
+ update('start');
 }
+function appSettingsScreen(){
+ $('main').innerHTML=pageTop(t('App settings'),t('Projects'))+'<div class="app-settings">'+selectField('languageSelect',t('Language'),[['system',t('System')],['es','Español'],['en','English']],languagePreference,'onchange="setLanguage(this.value)"')+'<p class="helper">'+t('System follows the language of this device.')+'</p><details class="screen-info"><summary>'+t('Screen information')+'</summary><p>VFX Tools · '+BUILD+'</p><button class="secondary" onclick="copyScreenDiagnostics()">'+t('Copy screen diagnostics')+'</button></details></div>';
+ updateLanguageControl();
+}
+async function copyScreenDiagnostics(){
+ const report=JSON.stringify({app:'VFX Tools',build:BUILD,browser:navigator.userAgent,initial:screenSamples[0],recent:screenSamples.slice(1),current:screenSample('copy')},null,2);
+ try{await navigator.clipboard.writeText(report);toast(t('Screen diagnostics copied'))}
+ catch{dl('VFX-Tools-screen-'+BUILD+'.json',new Blob([report],{type:'application/json'}))}
+}
+
 let shotDeleteTarget=null,shotDeleting=false;
 function confirmShotDelete(){const h=raw();if(!h)return;if(captureSaving||pendingCapture?.context.shotId===h.id)return toast(t('Finish saving the capture before deleting this shot.'));shotDeleteTarget={projectId:p().id,shotId:h.id};const count=[...(h.media||[]),...(h.plates||[]),...(h.voice||[])].length;$('dlgBody').innerHTML='<h2>'+t('Delete shot')+' '+esc(h.code)+'?</h2><p>'+t('This deletes the shot, its notes, measurements and captures from this device.')+'</p><p>'+count+' '+t('captures')+'</p><div class="row"><button onclick="closeDlg()">'+t('Cancel')+'</button><button id="deleteShotBtn" class="danger-fill" onclick="deleteShot()">'+t('Delete shot')+'</button></div>';$('dlg').showModal()}
 async function deleteShot(){if(shotDeleting||!shotDeleteTarget)return;const target=shotDeleteTarget;if(captureSaving||pendingCapture?.context.shotId===target.shotId)return toast(t('Finish saving the capture before deleting this shot.'));shotDeleting=true;$('deleteShotBtn').disabled=true;try{

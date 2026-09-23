@@ -21,9 +21,9 @@ Serve this directory over HTTP on localhost, or deploy the static files over HTT
 
 ## Data compatibility
 
-The database stays `slyhigh-vfx-data`, version 1, with stores `kv` and `media`. Export schema stays `slyhigh.vfxdata` / `0.1.0`. Existing project/day/scene/setup/shot UUIDs and original fields remain intact. UI build version is separately `0.2.6`.
+The database stays `slyhigh-vfx-data`, version 1, with stores `kv` and `media`. Export schema stays `slyhigh.vfxdata` / `0.1.0`. Existing project/day/scene/setup/shot UUIDs and original fields remain intact. UI build version is separately `0.2.7`.
 
-Screen sizing and navigation live in `layout.css`: a dynamic-height screen with one vertical content scroller, a compact capture row and bottom navigation. Safe-area padding is applied once per edge. Normal layout does not use `visualViewport.height`; a substantial keyboard occlusion uses it temporarily. The same content adapts to phone, tablet, landscape and split view. Long native-select values use a constrained closed control while retaining the native picker.
+Screen sizing and navigation live in `layout.css`: natural document scrolling with compact, viewport-fixed navigation and capture controls, following the working Physique OS reference. No script or fixed-height shell determines the footer position. The measured control heights only reserve space below content and place the capture row above navigation. The same content adapts to phone, tablet, landscape and split view. Long native-select values use a constrained closed control while retaining the native picker.
 
 New optional fields include `inherited_from`, `cameraProvenance`, equipment `provenance`, `si`, `nd`, `sensorMode`, `nextMarkerId`, and timestamps. Media records normally retain the existing Blob representation; in storage contexts that reject Blob/File preparation, an optional `bytes` ArrayBuffer is used and reconstructed when read. Earlier plates and voice recordings remain accessible under Previous captures; this version does not offer new plate/audio recording workflows.
 
@@ -51,7 +51,7 @@ Project PDF is the primary report and includes every shot across days/scenes/set
 
 ## v0.2.2
 
-VFX Tools uses the supplied new banner and app icon. Spanish and English follow the device language by default; the header selector stores an explicit preference locally. Translation happens only on interface strings before user data is interpolated. Equipment names, notes, identifiers and enum values stay intact.
+VFX Tools uses the supplied new banner and app icon. Spanish and English follow the device language by default; Projects → App settings contains the language selector and stores an explicit preference locally. Translation happens only on interface strings before user data is interpolated. Equipment names, notes, identifiers and enum values stay intact.
 
 New projects only ask for a name and operator; a unique code is generated internally. New shot immediately creates an editable slate with a unique sequential shot name, today's date and camera/context inherited from the previous shot. Scene and setup remain blank when no real context exists. Editing scene/setup moves only the current shot. Clearing inherited values preserves fields already entered by the operator. Type dropdowns have explicit add/remove controls. Capture is available once in the persistent dock.
 
@@ -59,7 +59,7 @@ Project reports include every shot, the brand banner, camera values, notes, meas
 
 ## v0.2.5
 
-The app uses a viewport-height flex shell: only the main content scrolls, while capture and navigation occupy normal layout rows at the bottom. VisualViewport resizing updates the shell for iOS; safe-area padding belongs to the navigation row. The page background matches the footer through the bottom inset. New service-worker versions offer a reload notice without clearing storage or automatically interrupting unfinished forms.
+The document is the only page scroller; capture and navigation remain fixed at the window bottom. VisualViewport is used only to detect keyboard occlusion and hide these controls, never to assign a page height. Safe-area padding belongs to navigation. App settings includes an optional screen-diagnostics copy action with bounded, in-memory viewport samples and no project content; it sends nothing automatically. New service-worker versions offer a reload notice without clearing storage or automatically interrupting unfinished forms.
 
 New projects open equipment setup. Shot creation validates that a registered camera and lens exist even when called from other screens. One available item is assigned automatically; valid previous selections carry forward; ambiguous equipment requires a choice. Canceling equipment setup creates no empty shot. Existing shots remain readable.
 
