@@ -52,3 +52,13 @@ Passed `tests/ux-021.cjs` in Chromium and WebKit:
 - Distortion PNG dimensions, custom square output, fullscreen and the native-share call payload pass. Physical sharing remains a device check.
 - Seven viewport/orientation combinations from 320 × 740 through 1366 × 1024 show no horizontal overflow across Shoot, Shot, Library, New Shot, Tools and Distortion. Navigation spans the viewport and is at least 90 px high; tablet shot panes split into two columns. Banner loads at every size.
 - Original end-to-end acquisition and offline suites continue to pass. New public build is 0.2.1; schema and database versions remain unchanged.
+
+## v0.2.2 — verified 2026-09-23
+
+Passed the updated e2e.cjs, edge-cases.cjs and webkit.cjs suites. Passed ux-022.cjs in both Chromium and WebKit.
+
+New coverage: es-MX/en-US automatic language selection, ES/EN/System switching and reload persistence; in-progress form preservation; literal project/operator/notes that match interface labels; automatic internal project code; direct editable shot creation and reparenting; add/remove type labels without empty stored enums; inherited-value clearing preserves user edits; no duplicate capture button; angle/fraction switching; device date correction; two-shot branded PDF with one file-backed image and one ArrayBuffer-backed image; print waits for decoded images; user HTML remains escaped; all seven iPhone/iPad widths from 320 to 1366 px remain free of horizontal overflow.
+
+Rendered and visually inspected the final two-page A4 report, including both shots and all reference images. White paper, intact logo and readable transparent references verified. Updated icon dimensions: 768 × 768 PNG. Banner: 1004 × 192 PNG. Supplied assets are copied unchanged.
+
+Run from repository root with a server on port 4173. Set PLAYWRIGHT_MODULE if Playwright is installed outside node_modules and BROWSER_CHANNEL=msedge for Edge. Run node tests/e2e.cjs before node tests/edge-cases.cjs (the latter uses the former's fixture). node tests/webkit.cjs starts its own server on port 4180 and tests offline reload by stopping it. Run node tests/ux-022.cjs, optionally TEST_ENGINE=webkit. ux-021.cjs forwards to the current UX suite. Physical iPhone/iPad camera, sharing and printing still need device testing.
