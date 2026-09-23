@@ -21,7 +21,9 @@ Serve this directory over HTTP on localhost, or deploy the static files over HTT
 
 ## Data compatibility
 
-The database stays `slyhigh-vfx-data`, version 1, with stores `kv` and `media`. Export schema stays `slyhigh.vfxdata` / `0.1.0`. Existing project/day/scene/setup/shot UUIDs and original fields remain intact. UI build version is separately `0.2.5`.
+The database stays `slyhigh-vfx-data`, version 1, with stores `kv` and `media`. Export schema stays `slyhigh.vfxdata` / `0.1.0`. Existing project/day/scene/setup/shot UUIDs and original fields remain intact. UI build version is separately `0.2.6`.
+
+Screen sizing and navigation live in `layout.css`: a dynamic-height screen with one vertical content scroller, a compact capture row and bottom navigation. Safe-area padding is applied once per edge. Normal layout does not use `visualViewport.height`; a substantial keyboard occlusion uses it temporarily. The same content adapts to phone, tablet, landscape and split view. Long native-select values use a constrained closed control while retaining the native picker.
 
 New optional fields include `inherited_from`, `cameraProvenance`, equipment `provenance`, `si`, `nd`, `sensorMode`, `nextMarkerId`, and timestamps. Media records normally retain the existing Blob representation; in storage contexts that reject Blob/File preparation, an optional `bytes` ArrayBuffer is used and reconstructed when read. Earlier plates and voice recordings remain accessible under Previous captures; this version does not offer new plate/audio recording workflows.
 

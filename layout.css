@@ -1,0 +1,134 @@
+/* One screen shell, one content scroller. Keep viewport and chrome sizing here. */
+:root {
+  --content-width: 1200px;
+  --page-gutter: clamp(16px, 4vw, 42px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --nav-height: 69px;
+}
+
+@media screen {
+  html { height: 100%; overflow: hidden; background: var(--bg); }
+  body {
+    height: 100%;
+    height: var(--keyboard-height, 100dvh);
+    min-height: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  .app {
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+  }
+  header {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+    padding: calc(8px + var(--safe-top)) max(var(--page-gutter), var(--safe-right), calc((100% - var(--content-width)) / 2 + var(--page-gutter))) 8px max(var(--page-gutter), var(--safe-left), calc((100% - var(--content-width)) / 2 + var(--page-gutter)));
+    background: #000;
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { flex: 1; min-width: 0; max-width: 360px; padding: 0; display: flex; align-items: center; text-align: left; }
+  .brand img { display: block; width: 100%; height: auto; max-height: 60px; object-fit: contain; }
+  .header-controls { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex: 0 0 112px; min-width: 0; }
+  .header-controls select {
+    background: var(--panel); color: var(--text); border: 1px solid var(--line);
+    border-radius: 5px; min-height: 44px; padding: 6px; width: 100%; font-size: 16px;
+  }
+  .local-status { font: 8px/1.3 ui-monospace, monospace; letter-spacing: .04em; color: #aaa9b1; text-align: right; overflow-wrap: anywhere; }
+  .local-status i { display: inline-block; width: 5px; height: 5px; border-radius: 100%; background: #a8cbb2; margin-right: 6px; }
+  main {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+    max-width: var(--content-width);
+    margin-inline: auto;
+    padding: 0 max(var(--page-gutter), var(--safe-right)) 24px max(var(--page-gutter), var(--safe-left));
+    overflow-y: auto;
+    overflow-x: hidden;
+    overflow-wrap: anywhere;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    scroll-padding-block: 16px;
+  }
+  main > *, main :is(section, form, .field, .slate-shot, .slate-take) { min-width: 0; }
+  main :is(input, select, textarea) { min-width: 0; max-width: 100%; }
+  /* WebKit's native select can overflow its measured box with long options.
+     Keep the native picker, but size and paint its closed control ourselves. */
+  main select, .field select, .setting select {
+    appearance: none; -webkit-appearance: none; overflow: hidden; text-overflow: ellipsis;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%23b7a2fc' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 8px center; padding-right: 30px;
+  }
+  .setting select { background-position: right center; padding-right: 22px; }
+  .section > *, .backbar > * { min-width: 0; }
+  .backbar .back { flex: 1; }
+  .backbar .text-button { flex: 0 1 auto; max-width: 50%; }
+  .list-row { gap: 12px; }
+  .list-row .grow { overflow-wrap: anywhere; }
+  .list-row .count { flex-shrink: 0; }
+  .shutter-head { flex-wrap: wrap; }
+  .setting > label { min-width: 0; }
+  .setting .unit { flex-shrink: 0; }
+  .take-controls button { flex-shrink: 0; }
+  .take-controls strong { min-width: 0; overflow-wrap: anywhere; }
+
+  #nav {
+    grid-row: 3;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
+    gap: 4px;
+    width: 100%;
+    min-width: 0;
+    padding: 6px max(8px, var(--safe-right), calc((100% - var(--content-width)) / 2)) max(6px, var(--safe-bottom)) max(8px, var(--safe-left), calc((100% - var(--content-width)) / 2));
+    background: #151518;
+    border-top: 1px solid var(--line);
+    z-index: 10;
+  }
+  #nav button {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-width: 0; min-height: 56px; width: 100%; padding: 6px 2px; gap: 4px;
+    color: #92909c; font: 10px/1.2 ui-monospace, monospace; letter-spacing: 0;
+  }
+  #nav svg { width: 22px; height: 22px; stroke-width: 1.5; flex-shrink: 0; }
+  #nav .active { color: var(--accent); background: #262130; border-radius: 8px; }
+  #captureDock {
+    grid-row: 2;
+    display: flex; align-items: center; gap: 12px; min-width: 0; width: 100%;
+    padding: 8px max(var(--page-gutter), var(--safe-right), calc((100% - var(--content-width)) / 2 + var(--page-gutter))) 8px max(var(--page-gutter), var(--safe-left), calc((100% - var(--content-width)) / 2 + var(--page-gutter)));
+    background: #111113; border-top: 1px solid var(--line); z-index: 9;
+  }
+  #captureDock > span { flex: 0 0 56px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  #captureDock small { font: 8px/1.3 ui-monospace, monospace; color: var(--muted); }
+  #captureDock b { font: 24px/1.1 ui-monospace, monospace; }
+  #captureDock button { flex: 1; min-width: 0; min-height: 48px; font-size: 14px; padding: 10px 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  #captureDock svg { width: 19px; height: 19px; flex-shrink: 0; }
+  #nav[hidden], #captureDock[hidden], body.keyboard #nav, body.keyboard #captureDock { display: none; }
+  body:has(#nav[hidden]) main { padding-bottom: max(24px, var(--safe-bottom)); }
+  dialog {
+    max-height: calc(var(--keyboard-height, 100dvh) - var(--safe-top) - var(--safe-bottom) - 24px);
+    overflow-y: auto; overflow-x: hidden; overflow-wrap: anywhere; overscroll-behavior: contain;
+    padding: clamp(18px, 4vw, 28px);
+  }
+  dialog .row > button { min-width: 0; }
+  #toast {
+    position: fixed; bottom: calc(var(--nav-height) + 12px); left: 50%; transform: translate(-50%, 10px);
+    padding: 12px 20px; max-width: 90%; border: 1px solid #51485f; border-radius: 6px;
+    background: #25212d; color: white; z-index: 150; opacity: 0; pointer-events: none; transition: .2s; font-size: 13px;
+  }
+  .has-capture-dock #toast { bottom: calc(var(--nav-height) + 80px); }
+  body:has(#nav[hidden]) #toast, body.keyboard #toast { bottom: max(12px, var(--safe-bottom)); }
+}

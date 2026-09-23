@@ -17,7 +17,7 @@ function exportJSON(){dl(p().code+'_VFX_DATA.json',new Blob([JSON.stringify(payl
 function q(v){return '"'+String(v??'').replace(/"/g,'""')+'"'} function exportCSV(){let a=[['day','date','scene','setup','shot','take','types','camera','lens','focal_mm','focus_m','aperture','ei','wb','shutter','fps','measurements','references','plates','notes','shutter_mode','shutter_fraction_denominator','shutter_seconds']];for(let d of p().days)for(let s of d.scenes)for(let u of s.setups)for(let h of u.shots){let c=h.camera||{};a.push([d.code,d.date,s.code,u.code,h.code,h.take,(h.types||[]).join('|'),cam(c.cameraId),lens(c.lensId),c.focal,c.focus,c.aperture,c.ei,c.wb,c.shutter,c.fps,h.measurements.length,h.media.length,h.plates.length,h.notes.length,c.shutterMode||'angle',c.shutterFraction,shutterSeconds(c)])}dl(p().code+'_SHOTS.csv',new Blob([a.map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv'}))}
 
 // UI 0.2; the original IndexedDB name, stores, UUIDs and schema remain unchanged.
-const BUILD='0.2.5', icons={shoot:'<path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"/>',library:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 5V3m8 2V3M4 10h16m-8 0v10"/>',tools:'<path d="M14 5a5 5 0 0 0-6 6L3 16l5 5 5-5a5 5 0 0 0 6-6l-4 4-5-5z"/>',export:'<path d="M12 3v12m-4-4 4 4 4-4M4 15v6h16v-6"/>',camera:'<path d="M3 7h5l2-3h4l2 3h5v13H3z"/><circle cx="12" cy="13" r="4"/>'};
+const BUILD='0.2.6', icons={shoot:'<path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"/>',library:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 5V3m8 2V3M4 10h16m-8 0v10"/>',tools:'<path d="M14 5a5 5 0 0 0-6 6L3 16l5 5 5-5a5 5 0 0 0 6-6l-4 4-5-5z"/>',export:'<path d="M12 3v12m-4-4 4 4 4-4M4 15v6h16v-6"/>',camera:'<path d="M3 7h5l2-3h4l2 3h5v13H3z"/><circle cx="12" cy="13" r="4"/>'};
 let route={page:'projects'},navStack=[],objectURLs=[],captureContext=null,pendingCapture=null,editingLib=null,customField=null,toastTimer,saveError=false;
 const icon=k=>'<svg viewBox="0 0 24 24" aria-hidden="true">'+icons[k]+'</svg>', pretty=s=>t(String(s||'').replaceAll('_',' ').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())), opt=(v,l,selected)=>'<option value="'+esc(v)+'" '+(String(v)===String(selected)?'selected':'')+'>'+esc(l??v)+'</option>';
 function field(id,label,value='',type='text',extra=''){return '<div class="field"><label for="'+id+'">'+label+'</label><input id="'+id+'" type="'+type+'" value="'+esc(value??'')+'" '+extra+'></div>'}
@@ -219,7 +219,30 @@ window.addEventListener('afterprint',()=>{document.title='VFX Tools'});
 
 
 
-function initViewportLayout(){let frame;const update=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{const viewport=window.visualViewport;if(viewport&&Math.abs(viewport.scale-1)>.01)return;const height=viewport?.height||window.innerHeight;document.documentElement.style.setProperty('--app-height',height+'px');const editing=/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName||'');document.body.classList.toggle('keyboard',editing&&height<window.innerHeight*.78)})};window.addEventListener('resize',update);window.visualViewport?.addEventListener('resize',update);document.addEventListener('focusin',update);document.addEventListener('focusout',update);update()}
+function initViewportLayout(){
+ let frame;
+ const update=()=>{
+  cancelAnimationFrame(frame);
+  frame=requestAnimationFrame(()=>{
+   const viewport=window.visualViewport;
+   const editing=/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName||'');
+   // CSS owns the normal viewport. In standalone iOS, visualViewport can omit
+   // the status bar; using it as the app height leaves a second gap at the bottom.
+   // Only use it for a substantial keyboard occlusion, never for pinch zoom.
+   const keyboard=!!(viewport&&Math.abs(viewport.scale-1)<.01&&editing&&window.innerHeight-viewport.height>Math.max(120,window.innerHeight*.25));
+   document.body.classList.toggle('keyboard',keyboard);
+   if(keyboard){
+    document.documentElement.style.setProperty('--keyboard-height',viewport.height+'px');
+    if($('main').contains(document.activeElement))document.activeElement.scrollIntoView({block:'nearest',inline:'nearest'});
+   }else document.documentElement.style.removeProperty('--keyboard-height');
+  });
+ };
+ window.addEventListener('resize',update);
+ window.visualViewport?.addEventListener('resize',update);
+ document.addEventListener('focusin',update);
+ document.addEventListener('focusout',update);
+ update();
+}
 let shotDeleteTarget=null,shotDeleting=false;
 function confirmShotDelete(){const h=raw();if(!h)return;if(captureSaving||pendingCapture?.context.shotId===h.id)return toast(t('Finish saving the capture before deleting this shot.'));shotDeleteTarget={projectId:p().id,shotId:h.id};const count=[...(h.media||[]),...(h.plates||[]),...(h.voice||[])].length;$('dlgBody').innerHTML='<h2>'+t('Delete shot')+' '+esc(h.code)+'?</h2><p>'+t('This deletes the shot, its notes, measurements and captures from this device.')+'</p><p>'+count+' '+t('captures')+'</p><div class="row"><button onclick="closeDlg()">'+t('Cancel')+'</button><button id="deleteShotBtn" class="danger-fill" onclick="deleteShot()">'+t('Delete shot')+'</button></div>';$('dlg').showModal()}
 async function deleteShot(){if(shotDeleting||!shotDeleteTarget)return;const target=shotDeleteTarget;if(captureSaving||pendingCapture?.context.shotId===target.shotId)return toast(t('Finish saving the capture before deleting this shot.'));shotDeleting=true;$('deleteShotBtn').disabled=true;try{
