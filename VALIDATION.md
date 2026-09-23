@@ -86,3 +86,13 @@ Passed tests/layout-026.cjs in Chromium and WebKit: 192 page/size/language cases
 Passed ux-025.cjs in both engines, including equipment gating, named PDF download/share, shot deletion/cancel/transaction rollback and offline PDF generation in Chromium. Passed e2e.cjs for capture, forms, state, inheritance, tools and offline reload. No changes to PDF generation or equipment flow.
 
 These are desktop browser engine tests with simulated sizes/insets/keyboard. Physical iPhone/iPad standalone behavior, system keyboard and native picker still require device verification.
+
+## v0.2.7 — Physique OS reference and app settings
+
+Inspected highvillarreal/physique-os index.html and styles.css and verified the published Physique OS stylesheet matches its main branch. Its viewport and Apple status-bar metadata match VFX Tools; the relevant layout difference is natural document scrolling plus position:fixed bottom navigation, without a fixed-height app shell. Adopted that pattern while preserving VFX Tools styling, safe insets, native selectors and responsive content widths. Updated navigation and language switching to restore window scroll positions.
+
+Passed layout-027.cjs in WebKit and Chromium: 192 layout/language cases per engine, long labels, 30-shot lists, back-navigation scroll restoration, safe areas, keyboard visibility and pinch-zoom distinction, landscape dialogs. A fault-injection case constrains body height to 812 px inside an 874 px viewport: navigation still ends at 874 before and after a persisted pageshow event, without orientation changes. This verifies independence from the body height, not the physical iOS compositor.
+
+Language is absent from the persistent header and available through Projects → App settings even with no projects. Tests switch English/System, check persistence across reload and ensure system uses es-MX in that test context. Screen diagnostics copy was stubbed and checked for build, bounded viewport samples and absence of fixture project/equipment names.
+
+Passed ux-025.cjs in both engines and e2e.cjs in Chromium, preserving PDF, equipment gating, shot deletion, capture and offline flows. Inspected mobile list/editor screenshots. Physical iPhone standalone launch/resume still requires user verification; no claim that desktop emulation reproduces the native startup bug. layout-026.cjs now forwards to the current layout suite.
