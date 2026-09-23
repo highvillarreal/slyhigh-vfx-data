@@ -1,30 +1,3 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#08080a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="VFX Data">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" href="./icon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="./style.css">
-<title>SLYHIGH VFX Data</title>
-</head>
-<body>
-<div class="app">
-<header><div><b>SLYHIGH VFX DATA</b><small id="ctx">Offline acquisition</small></div><button onclick="openProjects()" id="projectBtn">PROJECT</button></header>
-<main id="main"></main>
-</div>
-<button id="quick" class="fab hide" onclick="openQuick()">+</button>
-<nav>
-<button data-v="shoot" onclick="view('shoot')">◉<span>SHOOT</span></button>
-<button data-v="library" onclick="view('library')">▦<span>LIBRARY</span></button>
-<button data-v="print" onclick="view('print')">▤<span>PRINT</span></button>
-<button data-v="export" onclick="view('export')">⇩<span>EXPORT</span></button>
-</nav>
-<dialog id="dlg"><div id="dlgBody"></div></dialog>
-<div id="toast"></div>
-<script src="./app.js"></script>
-</body>
-</html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0b0d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="SLYHIGH VFX Tools"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="stylesheet" href="./style.css"><title>SLYHIGH VFX Tools</title></head>
+<body><div class="app"><header id="header"><button class="brand" onclick="go('projects')" aria-label="SLYHIGH VFX Tools, projects"><strong>SLYHIGH</strong><span>VFX TOOLS</span></button><span class="local-status" id="saveStatus" role="status"><i></i> ON DEVICE</span></header><main id="main"></main></div><nav id="nav" aria-label="Main navigation"></nav><dialog id="dlg" aria-label="Confirm deletion"><div id="dlgBody"></div></dialog><div id="toast" role="status"></div><div id="printRoot"></div><input id="captureInput" class="file-input" type="file" accept="image/*,video/*" capture="environment" aria-label="Capture photo or video"><script src="./presets.js"></script><script src="./app.js"></script></body></html>
