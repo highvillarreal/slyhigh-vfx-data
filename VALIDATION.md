@@ -1,5 +1,13 @@
 # Validation — 2026-09-23
 
+## v0.2.8 — 2026-09-25
+
+- `tests/attachments-028.cjs`, Chromium/Edge and WebKit: setup sharing across shots; separate same-name setups in different scenes; arbitrary multi-file import including unknown MIME, duplicate Unicode names and empty files; unchanged original download; reload/offline use; JSON backup originals; named ZIP download/share; missing-file export failure; batch abort rollback; WebKit byte fallback; delete cancel/failure/success; storage quota rejection; shot moves/deletion preserve setup assets; export with no remaining shots; complete project cleanup; ZIP size guard; traversal-safe filenames.
+- `tests/verify-delivery.py`: independent Python ZIP decoder validates every CRC, archive path, file count, original byte identity, manifest association and PDF text/photos. Two setup inventories appear once each across all shots, including an empty setup after deleting its last shot.
+- `tests/layout-027.cjs`: 192 layouts per engine pass, covering safe areas, nested overflow, long names, 30-shot vertical scrolling, fixed footer with stale body dimensions, keyboard restore, language settings and modal bounds. New screens checked at phone/tablet portrait and landscape sizes.
+- `tests/ux-025.cjs` passes in both engines: camera/lens gate, named report download/share, deletion rollback and responsive footer. `tests/e2e.cjs` and `tests/edge-cases.cjs` pass in Chromium: capture/retry, metadata, measurements, equipment, offline, image tools, complete backup and deletion cleanup.
+- Visually reviewed the setup attachment list and PDF inventory page. Real-device iOS storage/share limits for very large LiDAR files still depend on available device memory and storage; desktop WebKit is not a physical iPhone test.
+
 Base: stable v0.1 commit `0527a11d0da82f2f90714833136734df6e7fa030`.
 
 ## Automated browser checks passed

@@ -114,7 +114,7 @@ fs.mkdirSync('test-output',{recursive:true});
  await page.evaluate(()=>go('appSettings'));await page.locator('.screen-info summary').click();
  await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async text=>{window.copiedDiagnostics=text}}}));
  await page.getByRole('button',{name:'Copiar diagnóstico de pantalla',exact:true}).click();
- const report=JSON.parse(await page.evaluate(()=>copiedDiagnostics));assert.equal(report.build,'0.2.7');assert.ok(report.initial&&report.current);assert.ok(report.recent.length<=15);assert.doesNotMatch(JSON.stringify(report),/IPSY|camera-qa|lens-qa|PRODUCCION/);
+ const report=JSON.parse(await page.evaluate(()=>copiedDiagnostics));assert.equal(report.build,'0.2.8');assert.ok(report.initial&&report.current);assert.ok(report.recent.length<=15);assert.doesNotMatch(JSON.stringify(report),/IPSY|camera-qa|lens-qa|PRODUCCION/);
  assert.deepEqual(errors,[]);console.log('PASS '+(engine===webkit?'WebKit':'Chromium')+': '+checks+' layouts, safe areas, nested overflow, 30-shot vertical scroll, long values, compact footer, viewport mismatch, keyboard restore and modal bounds');
  await browser.close();
 })().catch(e=>{console.error(e);process.exit(1)});
