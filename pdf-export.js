@@ -5,7 +5,7 @@ function pdfReadyScreen(){if(!preparedPDF){go('export',{},true);return}const f=p
 async function sharePDF(){if(!preparedPDF)return;const file=preparedPDF.file;try{await navigator.share({files:[file],title:file.name})}catch(e){if(e.name!=='AbortError')toast(t('Could not share the PDF. Use Save PDF.'))}}
 async function report(scope='project'){
  if(reportBusy)return;const project=structuredClone(p()),all=scope==='shot'?shots(project).filter(h=>h.id===state.activeShotId):shots(project);if(!all.length&&(scope==='shot'||!projectFiles(project).length))return toast(t('Create a shot before exporting a report.'));
- const filename=pdfTitle('report',project,scope==='shot'?all[0].code:'')+'.pdf',operator=state.operator,origin=route,language=currentLanguage(),created=new Date();reportBusy=true;toast(t('Preparing PDF…'));
+ const filename=pdfTitle('report',project,scope==='shot'?all[0].code:'')+'.pdf',operator=project.operator??state.operator,origin=route,language=currentLanguage(),created=new Date();reportBusy=true;toast(t('Preparing PDF…'));
  try{const result=await buildReportPDF({project,all,operator,language,created,title:filename.slice(0,-4),setupIds:scope==='shot'?all.map(h=>h._u.id):null});const file=new File([result.bytes],filename,{type:'application/pdf',lastModified:created.getTime()});clearPreparedPDF();preparedPDF={file,url:URL.createObjectURL(file),projectId:project.id,warnings:result.warnings};if(route===origin)go('pdfReady');else toast(t('PDF ready'))}catch(e){toast(t('Could not prepare the PDF. Please retry.'));console.error(e)}finally{reportBusy=false}
 }
 async function buildReportPDF({project,all,operator,language,created,title,inventory=null,setupIds=null}){

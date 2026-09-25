@@ -18,3 +18,5 @@
 
 /* Setup files use the established document scroll and fixed navigation. */
 .setup-access{margin-top:24px}.attachment-list{display:grid;gap:16px;min-width:0}.attachment-card{min-width:0;padding:18px;border:1px solid var(--line,#333);border-radius:8px}.attachment-card b,.setup-context{overflow-wrap:anywhere}.attachment-card .row{display:flex;gap:12px}.attachment-card .row>*{flex:1;min-width:0}.attachment-card .danger-button{margin:0}
+
+.tracker-size label{display:flex;justify-content:space-between;gap:12px}.tracker-size input[type=range]{padding:0;min-height:44px;accent-color:var(--accent,#b7a2fc)}.import-warning{padding:12px;border:1px solid var(--accent,#b7a2fc);border-radius:8px;overflow-wrap:anywhere}

@@ -45,7 +45,7 @@ function t(value){return currentLanguage()==='es'?(ES[value]??value):value}
 function translateText(value){const trimmed=value.trim();if(Object.hasOwn(ES,trimmed))return value.replace(trimmed,t(trimmed));return value}
 // Called on static source fragments before user data is interpolated.
 function ui(fragment){if(currentLanguage()!=='es')return fragment;return fragment.replace(/(^|>)([^<>]*)(?=<|$)/g,(_,edge,text)=>edge+translateText(text)).replace(/(aria-label|alt)="([^"]*)"/g,(_,attr,text)=>attr+'="'+translateText(text)+'"')}
-function updateLanguageControl(){document.documentElement.lang=currentLanguage();const control=document.getElementById('languageSelect');if(control){control.value=languagePreference;control.setAttribute('aria-label',t('Language'));control.options[0].textContent=t('System')}for(const [id,label] of [['nav','Main navigation'],['dlg','Confirm deletion'],['captureInput','Capture photo or video']])document.getElementById(id)?.setAttribute('aria-label',t(label));document.querySelector('.brand')?.setAttribute('aria-label',t('VFX Tools, projects'))}
+function updateLanguageControl(){document.documentElement.lang=currentLanguage();const control=document.getElementById('languageSelect');if(control){control.value=languagePreference;control.setAttribute('aria-label',t('Language'));control.options[0].textContent=t('System')}for(const [id,label] of [['nav','Main navigation'],['dlg','Confirm deletion'],['captureInput','Capture photo or video'],['importInput','Import JSON'],['attachmentInput','Add files']])document.getElementById(id)?.setAttribute('aria-label',t(label));document.querySelector('.brand')?.setAttribute('aria-label',t('VFX Tools, projects'))}
 function setLanguage(value){if(!['system','es','en'].includes(value))return;const inputs=[...document.querySelectorAll('main input,main textarea,main select')].map(el=>({id:el.id,value:el.value,checked:el.checked})),details=[...document.querySelectorAll('main details')].map(el=>el.open),scroll=window.scrollY;languagePreference=value;try{localStorage.setItem('vfx-tools-language',value)}catch{}render();for(const saved of inputs){const el=document.getElementById(saved.id);if(el){el.value=saved.value;if(el.type==='checkbox')el.checked=saved.checked}}document.querySelectorAll('main details').forEach((el,i)=>el.open=details[i]||false);updateLanguageControl();setSaveStatus(saveError?'NOT SAVED · RETRY':'ON DEVICE',saveError);window.scrollTo(0,scroll)}
 window.addEventListener('languagechange',()=>{if(languagePreference==='system')setLanguage('system')});
 
@@ -98,4 +98,31 @@ Object.assign(ES,{
   "Original files are delivered separately in the delivery ZIP.": "Los archivos originales se entregan junto al reporte dentro del ZIP.",
   "This deletes the shot, its notes, measurements and captures from this device.": "Se borrarán el shot, sus notas, medidas y capturas del dispositivo. Los archivos compartidos del setup se conservan.",
   "This removes this project and its captures from this device.": "Se eliminarán este proyecto, sus capturas y todos los archivos de sus setups del dispositivo."
+});
+
+Object.assign(ES,{
+  "Import JSON": "Importar JSON",
+  "Import project": "Importar proyecto",
+  "Project not imported": "Proyecto sin importar",
+  "Reading JSON…": "Leyendo JSON…",
+  "Importing project…": "Importando proyecto…",
+  "Project imported": "Proyecto importado",
+  "Imported": "Importado",
+  "This JSON does not match the current VFX Tools project format.": "El JSON no corresponde al formato actual de proyectos de VFX Tools.",
+  "This JSON format is not supported. Export it with a compatible version of VFX Tools.": "Este formato JSON no es compatible. Expórtalo desde una versión compatible de VFX Tools.",
+  "Imports support VFX Tools 0.2.8 and later.": "La importación admite VFX Tools 0.2.8 en adelante.",
+  "The JSON contains duplicate identifiers.": "El JSON contiene identificadores duplicados.",
+  "A shot refers to equipment missing from the JSON.": "Un shot hace referencia a equipo que no está en el JSON.",
+  "A shot refers to another shot missing from the JSON.": "Un shot hace referencia a otro shot que no está en el JSON.",
+  "The backup contains invalid file references.": "El respaldo contiene referencias de archivos inválidas.",
+  "A file in the backup is damaged.": "Un archivo del respaldo está dañado.",
+  "This file is not valid JSON.": "El archivo no contiene un JSON válido.",
+  "Choose a JSON smaller than 256 MB.": "Selecciona un JSON de menos de 256 MB.",
+  "original files included": "archivos originales incluidos",
+  "files are referenced but not included. Their records will be imported without the originals.": "archivos están referenciados, pero no incluidos. Se importarán sus registros sin los originales.",
+  "A new project will be added. Existing projects will not be replaced.": "Se agregará un proyecto nuevo. Tus proyectos actuales no se reemplazarán.",
+  "Not enough device storage. Free space and try importing again.": "No hay suficiente espacio en el dispositivo. Libera espacio y vuelve a importar.",
+  "Could not import. Nothing was changed. Please retry.": "No se pudo importar. No se cambió ningún dato. Vuelve a intentar.",
+  "Tracker size": "Tamaño de trackers",
+  "Increase for phone screens. Preview, fullscreen and PNG use the same size.": "Auméntalo para pantallas de celular. La vista previa, la pantalla completa y el PNG usan el mismo tamaño."
 });
