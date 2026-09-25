@@ -1,5 +1,11 @@
 # Validation — 2026-09-23
 
+## v0.2.9 — 2026-09-25
+
+- `tests/import-trackers-029.cjs` passes in Chromium/Edge and WebKit: preview and cancel; fresh-install import; unversioned current-format and versioned backup import; independent duplicate copies; equipment/media/inheritance remapping; per-project operator; exact recovery of a 2 MiB scanner file plus an image; named PDF/ZIP export; missing-original warning without borrowing local files; invalid JSON/nested types/duplicate IDs/legacy version/unsupported schema/damaged embedded file rejection; atomic transaction abort; quota and input-size limits; compatible later version; offline import in Chromium.
+- Tracker checks compare rendered cross widths at 100% and 300%, exact fullscreen canvas content, named PNG download, blue-screen scaling, no-trackers visibility, persisted preference, five phone/tablet sizes and stale PNG callback invalidation. Visual review covers the mobile slider, large-tracker PNG and import preview.
+- Existing setup attachment suites pass in both engines; 192 layout cases per engine still pass. Chromium end-to-end/edge suites cover capture, backups, metadata, offline, physical marker printing, equipment and project deletion.
+
 ## v0.2.8 — 2026-09-25
 
 - `tests/attachments-028.cjs`, Chromium/Edge and WebKit: setup sharing across shots; separate same-name setups in different scenes; arbitrary multi-file import including unknown MIME, duplicate Unicode names and empty files; unchanged original download; reload/offline use; JSON backup originals; named ZIP download/share; missing-file export failure; batch abort rollback; WebKit byte fallback; delete cancel/failure/success; storage quota rejection; shot moves/deletion preserve setup assets; export with no remaining shots; complete project cleanup; ZIP size guard; traversal-safe filenames.

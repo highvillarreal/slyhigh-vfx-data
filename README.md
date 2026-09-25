@@ -1,5 +1,13 @@
 # VFX Tools
 
+## v0.2.9 — Import JSON and tracker size
+
+Projects → Import JSON accepts the current VFX Tools project envelope (`slyhigh.vfxdata`, schema `0.1.0`), including metadata JSON and original-media JSON backups. Support starts at app v0.2.8, with no legacy migrations. That release did not stamp the app version, so unversioned files are accepted only when they match the current structure; their originating app release cannot be distinguished. New exports include `app_version`. Explicit versions below 0.2.8 and incompatible schemas are rejected. Future app versions must still use the supported structure.
+
+The import preview shows project/shot/equipment counts and whether originals are present. Every import creates a new project, remapping entity and file IDs plus equipment/inheritance relationships; existing projects and unrelated device files are never overwritten or silently attached. Name/code collisions receive a suffix. Metadata-only imports retain unavailable-file records with an explicit warning. Embedded base64 originals are restored atomically with metadata; cancellation, invalid JSON, damaged embedded data and failed writes leave the device unchanged. JSON input is limited to 256 MiB. Imported operator names are kept per project and used in report exports without replacing the device's default operator.
+
+Screen assets now offer a 100–300% tracker-size slider in 25% steps. It scales cross length and stroke width in green/blue previews, fullscreen, sharing and saved PNGs; the selected size persists on the device. The control hides for the no-trackers pattern, and filenames include the size. PNG generation invalidates earlier callbacks before validating dimensions, preventing stale images after rapid/invalid edits.
+
 ## v0.2.8 — Setup files and delivery ZIP
 
 Rodaje → Setups y archivos opens the setup inventory. A shot also links to its setup's Archivos y LiDAR. Any file type can be selected, including multiple companion files or the scanner's original ZIP. Files belong to the setup UUID within its day and scene, never to an individual shot or take. Existing projects need no migration: `setup.attachments` is optional, and binary records use the existing media store with `projectId` and `setupId`.
