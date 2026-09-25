@@ -1,5 +1,15 @@
 # VFX Tools
 
+## v0.2.8 — Setup files and delivery ZIP
+
+Rodaje → Setups y archivos opens the setup inventory. A shot also links to its setup's Archivos y LiDAR. Any file type can be selected, including multiple companion files or the scanner's original ZIP. Files belong to the setup UUID within its day and scene, never to an individual shot or take. Existing projects need no migration: `setup.attachments` is optional, and binary records use the existing media store with `projectId` and `setupId`.
+
+Batch imports and attachment deletion commit metadata and originals in one IndexedDB transaction; failed writes leave no partial batch. Stored Blobs remain supported with a byte fallback for older WebKit. Storage failures are visible and preserve the source files. Attachment deletion requires confirmation. Moving or deleting a shot preserves setup files, and setups that retain files stay accessible even with no shots. Project deletion removes them; JSON metadata and the original-media backup include them.
+
+Export → Reporte y archivos / ZIP prepares a named delivery with the branded PDF, `project.json`, `files.json`, original scans under `setups/<date>_SC_<scene>_SETUP_<setup>/`, and references under `shots/`. Each setup inventory appears once in the project PDF; current-shot PDFs include only that shot's setup inventory. The manifest maps original names and IDs to archive paths. Duplicate filenames receive a suffix only in the ZIP; selection names and bytes remain unchanged. Companion files stay together; attach the scanner's ZIP to preserve nested folders. Missing originals stop the delivery instead of silently omitting them.
+
+The offline ZIP writer uses stored entries, UTF-8 filenames and CRC32, checking data in 1 MiB slices instead of base64-encoding originals. Deliveries must stay below 4 GiB and 65,535 entries; larger originals can still be downloaded individually. Device storage and browser memory also limit large deliveries. Save/share uses a prepared File and a fresh user gesture for iOS. The existing fixed footer/document scrolling layout is unchanged.
+
 Offline-first acquisition for VFX on set. This mobile redesign builds on stable v0.1 (`0527a11`) and keeps its client-side architecture and existing data.
 
 ## Run
